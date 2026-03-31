@@ -1,1 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overlay Template Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg:        #0c0c10;
+    --surface:   #13131a;
+    --surface2:  #1a1a24;
+    --border:    rgba(255,255,255,.08);
+    --border2:   rgba(255,255,255,.14);
+    --text:      #f0f0f5;
+    --muted:     #8888aa;
+    --accent:    #6c63ff;
+    --accent2:   #ff6b6b;
+    --green:     #4ecb71;
+    --font-h:    'Syne', sans-serif;
+    --font-b:    'DM Sans', sans-serif;
+    --radius:    14px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-b); min-height: 100vh; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(12,12,16,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-h); font-size: 1.15rem; font-weight: 800;
+    background: linear-gradient(90deg, #6c63ff, #ff6b6b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -.02em;
+  }
+  .nav-count {
+    font-size: .78rem; background: var(--surface2);
+    border: 1px solid var(--border2); color: var(--muted);
+    padding: 4px 12px; border-radius: 999px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center; padding: 72px 24px 56px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(108,99,255,.12) 0%, transparent 60%);
+  }
+  .hero-eyebrow {
+    display: inline-block; font-size: .72rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); background: rgba(108,99,255,.12);
+    border: 1px solid rgba(108,99,255,.3);
+    padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: var(--font-h); font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800; letter-spacing: -.03em; line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { background: linear-gradient(90deg,#6c63ff,#ff6b6b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p { color: var(--muted); font-size: 1rem; max-width: 480px; margin: 0 auto 32px; line-height: 1.7; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 32px;
+  }
+  .stat { text-align: center; }
+  .stat-n { font-family: var(--font-h); font-size: 1.6rem; font-weight: 800; }
+  .stat-l { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    padding: 0 32px 28px; justify-content: center;
+  }
+  .filter-btn {
+    padding: 7px 18px; border-radius: 999px; font-size: .8rem;
+    font-family: var(--font-b); font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border2); background: var(--surface2);
+    color: var(--muted); transition: all .2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px; padding: 0 32px 80px;
+    max-width: 1300px; margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: border-color .25s, transform .25s;
+    animation: fadeup .4s ease both;
+  }
+  .card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  @keyframes fadeup { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Preview area */
+  .preview {
+    height: 220px; position: relative; overflow: hidden;
+    cursor: pointer;
+  }
+  .preview-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform .5s ease;
+  }
+  .card:hover .preview-bg { transform: scale(1.04); }
+  .preview-overlay { position: absolute; inset: 0; }
+  .preview-texture  { position: absolute; inset: 0; }
+  .preview-content {
+    position: absolute; z-index: 3;
+    color: #fff; padding: 24px;
+  }
+  .preview-eyebrow {
+    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+    opacity: .7; margin-bottom: 6px; font-weight: 600;
+  }
+  .preview-title {
+    font-family: var(--font-h); font-size: 1.15rem; font-weight: 700;
+    line-height: 1.2; margin-bottom: 6px;
+  }
+  .preview-sub { font-size: .78rem; opacity: .7; }
+  .preview-badge {
+    position: absolute; top: 12px; right: 12px; z-index: 4;
+    font-size: .62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; padding: 4px 10px; border-radius: 999px;
+    background: rgba(0,0,0,.45); color: #fff;
+    border: 1px solid rgba(255,255,255,.2);
+    backdrop-filter: blur(8px);
+  }
+  .preview-expand {
+    position: absolute; inset: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; background: rgba(0,0,0,.3);
+    transition: opacity .2s;
+  }
+  .preview:hover .preview-expand { opacity: 1; }
+  .expand-btn {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+    backdrop-filter: blur(8px); color: #fff;
+    padding: 8px 18px; border-radius: 8px; font-size: .8rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Card footer */
+  .card-footer {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+    gap: 10px;
+  }
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-tag  { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+  .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .btn-copy, .btn-full {
+    padding: 7px 14px; border-radius: 8px; font-size: .78rem;
+    font-family: var(--font-b); font-weight: 600; cursor: pointer;
+    border: none; display: flex; align-items: center; gap: 5px;
+    transition: opacity .2s, transform .15s; white-space: nowrap;
+  }
+  .btn-copy { background: var(--accent); color: #fff; }
+  .btn-copy:hover { opacity: .85; }
+  .btn-copy.copied { background: var(--green); }
+  .btn-full { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+  .btn-full:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 18px; width: 100%; max-width: 900px;
+    max-height: 90vh; overflow-y: auto;
+    animation: modalIn .25s ease;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--surface); z-index: 10;
+  }
+  .modal-title { font-family: var(--font-h); font-size: 1.1rem; font-weight: 700; }
+  .modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--muted); cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: color .2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-preview {
+    height: 300px; position: relative; overflow: hidden;
+  }
+  .modal-preview .preview-bg { transition: none; }
+
+  .modal-body { padding: 24px; }
+
+  /* Code tabs */
+  .code-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .code-tab {
+    padding: 7px 16px; border-radius: 8px; font-size: .78rem;
+    font-weight: 600; cursor: pointer; border: 1px solid var(--border2);
+    background: transparent; color: var(--muted);
+    font-family: var(--font-b); transition: all .2s;
+  }
+  .code-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .code-block {
+    background: #0a0a10; border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; overflow-x: auto;
+    font-family: 'Courier New', monospace; font-size: .82rem;
+    line-height: 1.7; color: #c9d1d9; display: none;
+    position: relative;
+  }
+  .code-block.active { display: block; }
+  .code-copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px; border-radius: 6px; font-size: .72rem;
+    font-weight: 600; background: var(--surface2); color: var(--muted);
+    border: 1px solid var(--border2); cursor: pointer; font-family: var(--font-b);
+    transition: all .2s;
+  }
+  .code-copy-btn:hover { color: var(--text); }
+  .code-copy-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* Syntax highlight */
+  .kw  { color: #ff7b72; }
+  .val { color: #a5d6ff; }
+  .fn  { color: #d2a8ff; }
+  .num { color: #79c0ff; }
+  .cm  { color: #8b949e; font-style: italic; }
+  .prop{ color: #ffa657; }
+  .str { color: #a8ff90; }
+
+  /* Usage tips */
+  .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .tip-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .tip-card h4 { font-size: .8rem; font-weight: 600; margin-bottom: 4px; color: var(--accent); }
+  .tip-card p  { font-size: .75rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 28px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: .78rem;
+  }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; padding: 0 16px 60px; }
+    nav, .filter-bar { padding-left: 16px; padding-right: 16px; }
+    .tips-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">OverlayKit</div>
+  <div class="nav-count" id="nav-count">6 templates</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Free CSS Templates</div>
+  <h1>Background <span>Overlay</span><br>Template Library</h1>
+  <p>Copy-ready overlay CSS for Elementor, WordPress, and any HTML project. Live preview included.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n" id="s-total">6</div><div class="stat-l">Templates</div></div>
+    <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Free</div></div>
+    <div class="stat"><div class="stat-n">CSS</div><div class="stat-l">Pure CSS</div></div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="dark">Dark</button>
+  <button class="filter-btn" data-filter="gradient">Gradient</button>
+  <button class="filter-btn" data-filter="colour">Colour Tint</button>
+  <button class="filter-btn" data-filter="creative">Creative</button>
+</div>
+
+<!-- CARD GRID -->
+<div class="grid" id="card-grid"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Template Preview</div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-preview" id="modal-preview"></div>
+    <div class="modal-body">
+      <div class="code-tabs">
+        <button class="code-tab active" onclick="switchTab('css')">CSS Only</button>
+        <button class="code-tab" onclick="switchTab('html')">Full HTML</button>
+        <button class="code-tab" onclick="switchTab('elementor')">Elementor</button>
+      </div>
+      <div class="code-block active" id="tab-css">
+        <button class="code-copy-btn" onclick="copyCode('css')">Copy</button>
+        <code id="code-css"></code>
+      </div>
+      <div class="code-block" id="tab-html">
+        <button class="code-copy-btn" onclick="copyCode('html')">Copy</button>
+        <code id="code-html"></code>
+      </div>
+      <div class="code-block" id="tab-elementor">
+        <button class="code-copy-btn" onclick="copyCode('elementor')">Copy</button>
+        <code id="code-elementor"></code>
+      </div>
+      <div class="tips-grid" id="modal-tips"></div>
+    </div>
+  </div>
+</div>
+
+<footer>OverlayKit · Pure CSS · Free to use in any project</footer>
+
+<script>
+const templates = [
+  {
+    id: 1,
+    name: 'Gradient Bottom Fade',
+    tag: 'Dark · Hero sections',
+    filter: ['dark', 'gradient'],
+    badge: 'Most Popular',
+    previewText: { eyebrow: 'Style 01', title: 'Clean fade from bottom', sub: 'Image shows at top, text sits at base' },
+    contentPos: 'bottom',
+    bgColor: '#1a3028',
+    bgGradient: 'radial-gradient(ellipse at 30% 40%, #4a7c59 0%, #1a3028 60%, #0d1f1a 100%)',
+    overlayCSS: 'background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.40) 50%, rgba(0,0,0,0.00) 100%)',
+    tips: [
+      { h: 'Best for', p: 'Hero sections, blog post cards, team member cards' },
+      { h: 'Tweak it', p: 'Change 0.85 to 0.95 for more contrast, or 0.65 for a softer fade' },
+      { h: 'Text position', p: 'Place your text at the bottom of the section for best readability' },
+      { h: 'Image type', p: 'Works with any photo — landscape images look especially great' },
+    ]
+  },
+  {
+    id: 2,
+    name: 'Dark Vignette',
+    tag: 'Dark · Centered layouts',
+    filter: ['dark'],
+    badge: 'Centered Text',
+    previewText: { eyebrow: 'Style 02', title: 'Spotlight effect', sub: 'Darkens edges, keeps center bright' },
+    contentPos: 'center',
+    bgColor: '#1a2540',
+    bgGradient: 'radial-gradient(ellipse at 70% 30%, #2e4a8c 0%, #0f1e4a 50%, #070d1e 100%)',
+    overlayCSS: 'background: radial-gradient(ellipse at center, rgba(0,0,0,0.00) 30%, rgba(0,0,0,0.78) 100%)',
+    tips: [
+      { h: 'Best for', p: 'Centered hero headlines, splash screens, fullscreen banners' },
+      { h: 'Tweak it', p: 'Move "ellipse at center" to "ellipse at 30% 50%" to shift the bright spot left' },
+      { h: 'Text position', p: 'Center your text vertically and horizontally for maximum impact' },
+      { h: 'Image type', p: 'Works best with busy or detailed photos — draws the eye to your text' },
+    ]
+  },
+  {
+    id: 3,
+    name: 'Solid Brand Tint',
+    tag: 'Colour · Brand consistent',
+    filter: ['colour'],
+    badge: 'Brand Friendly',
+    previewText: { eyebrow: 'Style 03', title: 'Consistent on any photo', sub: 'Swap colour to match your brand' },
+    contentPos: 'bottom',
+    bgColor: '#3d1f0a',
+    bgGradient: 'radial-gradient(ellipse at 40% 60%, #8c4a1a 0%, #3d1f0a 55%, #180b02 100%)',
+    overlayCSS: 'background: rgba(20, 60, 120, 0.55)',
+    tips: [
+      { h: 'Best for', p: 'Brand sections, service cards, consistent multi-image galleries' },
+      { h: 'Tweak it', p: 'Replace rgba(20,60,120,0.55) with your brand colour at 40–60% opacity' },
+      { h: 'Opacity guide', p: '0.3 = subtle tint · 0.55 = strong · 0.75 = near-solid' },
+      { h: 'Pro tip', p: 'Combine with a bottom gradient for even better text readability' },
+    ]
+  },
+  {
+    id: 4,
+    name: 'Duotone Diagonal',
+    tag: 'Creative · Editorial',
+    filter: ['creative', 'gradient'],
+    badge: 'Editorial',
+    previewText: { eyebrow: 'Style 04', title: 'Two-tone cinematic look', sub: 'Creative & agency pages' },
+    contentPos: 'bottom',
+    bgColor: '#1a1a2e',
+    bgGradient: 'radial-gradient(ellipse at 60% 20%, #4a1a5c 0%, #1a0a2e 55%, #070310 100%)',
+    overlayCSS: 'background: linear-gradient(135deg, rgba(120,30,80,0.60) 0%, rgba(20,80,140,0.60) 100%)',
+    tips: [
+      { h: 'Best for', p: 'Portfolio hero, creative agency, course landing pages' },
+      { h: 'Tweak it', p: 'Change the angle (135deg) to 45deg or 90deg for different diagonal direction' },
+      { h: 'Colour pairs', p: 'Purple + teal · Orange + blue · Pink + navy · Gold + dark green' },
+      { h: 'Image type', p: 'Looks stunning on black-and-white or low-saturation photography' },
+    ]
+  },
+  {
+    id: 5,
+    name: 'Gradient + Texture',
+    tag: 'Creative · Premium',
+    filter: ['dark', 'creative'],
+    badge: 'Premium',
+    previewText: { eyebrow: 'Style 05', title: 'Depth with fine grain', sub: 'Finance, tech & premium brands' },
+    contentPos: 'bottom',
+    bgColor: '#0a1f2e',
+    bgGradient: 'radial-gradient(ellipse at 50% 80%, #1a5c6e 0%, #0a2030 55%, #020b10 100%)',
+    overlayCSS: `background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.40) 50%, rgba(0,0,0,0.00) 100%)`,
+    overlayCSS2: `background: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 4px)`,
+    tips: [
+      { h: 'Best for', p: 'Finance, SaaS, education, luxury brand sections' },
+      { h: 'Two layers', p: 'This uses TWO overlay divs — the gradient + the texture on top' },
+      { h: 'Tweak texture', p: 'Change 4px to 3px for denser lines, or 6px for lighter feel' },
+      { h: 'Scanline size', p: 'rgba opacity 0.12 is subtle — raise to 0.2 for a stronger effect' },
+    ]
+  },
+  {
+    id: 6,
+    name: 'Side Fade Left',
+    tag: 'Layout · Split sections',
+    filter: ['gradient'],
+    badge: 'Split Layout',
+    previewText: { eyebrow: 'Style 06', title: 'Text left, image right', sub: 'Wide banner & split sections' },
+    contentPos: 'left',
+    bgColor: '#2e2e2e',
+    bgGradient: 'radial-gradient(ellipse at 70% 50%, #555 0%, #2a2a2a 50%, #111 100%)',
+    overlayCSS: 'background: linear-gradient(to right, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.40) 45%, rgba(0,0,0,0.00) 100%)',
+    tips: [
+      { h: 'Best for', p: 'Wide hero banners, service sections, about page layouts' },
+      { h: 'Tweak it', p: 'Change "to right" to "to left" for text on the right side' },
+      { h: 'Text width', p: 'Keep your text block to max 50% width so the image shows on the other side' },
+      { h: 'Image choice', p: 'Use photos with the main subject on the right for best composition' },
+    ]
+  }
+];
+
+// ── Render cards ──
+function renderCards(filter = 'all') {
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  const filtered = filter === 'all' ? templates : templates.filter(t => t.filter.includes(filter));
+
+  filtered.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = (i * 0.06) + 's';
+
+    const contentStyle = t.contentPos === 'center'
+      ? 'top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:80%'
+      : t.contentPos === 'left'
+      ? 'bottom:24px;left:24px;max-width:60%'
+      : 'bottom:0;left:0;right:0;padding:24px';
+
+    card.innerHTML = `
+      <div class="preview" onclick="openModal(${t.id})">
+        <div class="preview-bg" style="background-color:${t.bgColor};background-image:${t.bgGradient}"></div>
+        <div class="preview-overlay" style="${t.overlayCSS}"></div>
+        ${t.overlayCSS2 ? `<div class="preview-texture" style="${t.overlayCSS2}"></div>` : ''}
+        <div class="preview-content" style="${contentStyle}">
+          <div class="preview-eyebrow">${t.previewText.eyebrow}</div>
+          <div class="preview-title">${t.previewText.title}</div>
+          <div class="preview-sub">${t.previewText.sub}</div>
+        </div>
+        <div class="preview-badge">${t.badge}</div>
+        <div class="preview-expand">
+          <div class="expand-btn">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            Full Preview
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-meta">
+          <div class="card-name">${t.name}</div>
+          <div class="card-tag">${t.tag}</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-copy" id="qcopy-${t.id}" onclick="quickCopy(${t.id})">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy CSS
+          </button>
+          <button class="btn-full" onclick="openModal(${t.id})">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── Filters ──
+document.getElementById('filter-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(btn.dataset.filter);
+});
+
+// ── Quick copy ──
+function quickCopy(id) {
+  const t = templates.find(x => x.id === id);
+  navigator.clipboard.writeText(t.overlayCSS + ';');
+  const btn = document.getElementById('qcopy-' + id);
+  btn.classList.add('copied');
+  btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> Copied!';
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy CSS';
+  }, 2000);
+}
+
+// ── Modal ──
+let activeTemplate = null;
+
+function openModal(id) {
+  const t = templates.find(x => x.id === id);
+  activeTemplate = t;
+
+  document.getElementById('modal-title').textContent = t.name;
+
+  // Modal preview
+  const mp = document.getElementById('modal-preview');
+  const contentStyle = t.contentPos === 'center'
+    ? 'top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:80%'
+    : t.contentPos === 'left'
+    ? 'bottom:24px;left:24px;max-width:60%'
+    : 'bottom:0;left:0;right:0;padding:32px';
+
+  mp.innerHTML = `
+    <div class="preview-bg" style="background-color:${t.bgColor};background-image:${t.bgGradient}"></div>
+    <div class="preview-overlay" style="${t.overlayCSS}"></div>
+    ${t.overlayCSS2 ? `<div class="preview-texture" style="${t.overlayCSS2}"></div>` : ''}
+    <div class="preview-content" style="${contentStyle};position:absolute;z-index:3;color:#fff;">
+      <div class="preview-eyebrow" style="font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:8px;font-weight:600;">${t.previewText.eyebrow}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:6px;">${t.previewText.title}</div>
+      <div style="font-size:.85rem;opacity:.7;">${t.previewText.sub}</div>
+    </div>
+  `;
+
+  // Codes
+  const cssCode = t.overlayCSS2
+    ? `.overlay-gradient {\n  ${t.overlayCSS};\n}\n\n.overlay-texture {\n  ${t.overlayCSS2};\n}`
+    : `.overlay {\n  ${t.overlayCSS};\n}`;
+
+  const htmlCode = t.overlayCSS2
+    ? `<section style="position: relative; height: 500px;">\n\n  <!-- 1. Background image -->\n  <div style="\n    position: absolute; inset: 0;\n    background: url('your-image.jpg') center / cover;\n  "></div>\n\n  <!-- 2. Gradient overlay -->\n  <div style="\n    position: absolute; inset: 0;\n    ${t.overlayCSS};\n  "></div>\n\n  <!-- 3. Texture overlay -->\n  <div style="\n    position: absolute; inset: 0;\n    ${t.overlayCSS2};\n  "></div>\n\n  <!-- 4. Your content -->\n  <div style="position: relative; z-index: 3; padding: 60px 48px;">\n    <h1 style="color: #fff; font-size: 2.5rem;">Your Headline</h1>\n    <p style="color: rgba(255,255,255,.75); margin-top: 12px;">Subheading text here</p>\n    <a href="#" style="display:inline-block;margin-top:24px;padding:12px 28px;\n      background:#fff;color:#000;border-radius:8px;text-decoration:none;font-weight:600;">\n      Call to Action\n    </a>\n  </div>\n\n</section>`
+    : `<section style="position: relative; height: 500px;">\n\n  <!-- 1. Background image -->\n  <div style="\n    position: absolute; inset: 0;\n    background: url('your-image.jpg') center / cover;\n  "></div>\n\n  <!-- 2. Overlay -->\n  <div style="\n    position: absolute; inset: 0;\n    ${t.overlayCSS};\n  "></div>\n\n  <!-- 3. Your content -->\n  <div style="position: relative; z-index: 3; padding: 60px 48px;">\n    <h1 style="color: #fff; font-size: 2.5rem;">Your Headline</h1>\n    <p style="color: rgba(255,255,255,.75); margin-top: 12px;">Subheading text here</p>\n    <a href="#" style="display:inline-block;margin-top:24px;padding:12px 28px;\n      background:#fff;color:#000;border-radius:8px;text-decoration:none;font-weight:600;">\n      Call to Action\n    </a>\n  </div>\n\n</section>`;
+
+  const elementorCode = `/* Paste into Elementor → Section → Style → Background Overlay */\n/* OR use an HTML widget inside your section */\n\n<!-- Add this HTML widget inside your Elementor section -->\n<div style="\n  position: absolute;\n  inset: 0;\n  z-index: 1;\n  pointer-events: none;\n  ${t.overlayCSS};\n"></div>\n${t.overlayCSS2 ? `\n<div style="\n  position: absolute;\n  inset: 0;\n  z-index: 2;\n  pointer-events: none;\n  ${t.overlayCSS2};\n"></div>` : ''}\n\n/* Make sure your section has: */\n/* Position: Relative (Elementor sets this by default) */\n/* Your text widgets should have a higher z-index (set to 3+) */`;
+
+  document.getElementById('code-css').innerHTML        = syntaxHL(cssCode);
+  document.getElementById('code-html').innerHTML       = syntaxHL(htmlCode);
+  document.getElementById('code-elementor').innerHTML  = syntaxHL(elementorCode);
+
+  // Tips
+  const tipsHtml = t.tips.map(tip =>
+    `<div class="tip-card"><h4>${tip.h}</h4><p>${tip.p}</p></div>`
+  ).join('');
+  document.getElementById('modal-tips').innerHTML = tipsHtml;
+
+  // Reset tabs
+  switchTab('css');
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+
+function switchTab(tab) {
+  ['css','html','elementor'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    document.querySelectorAll('.code-tab').forEach((el, i) => {
+      el.classList.toggle('active', ['css','html','elementor'][i] === tab);
+    });
+  });
+}
+
+function copyCode(tab) {
+  if (!activeTemplate) return;
+  const el = document.getElementById('code-' + tab);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text);
+  const btn = el.parentElement.querySelector('.code-copy-btn');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+// ── Syntax highlight (simple) ──
+function syntaxHL(code) {
+  return code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(\/\*[^*]*\*\/)/g, '<span class="cm">$1</span>')
+    .replace(/(background|position|inset|z-index|pointer-events|display|padding|margin|color|font-size|font-weight|text-decoration|border-radius):/g, '<span class="prop">$1</span>:')
+    .replace(/(rgba|linear-gradient|radial-gradient|repeating-linear-gradient|url|ellipse)/g, '<span class="fn">$1</span>')
+    .replace(/(\d+(?:\.\d+)?(?:px|%|deg|em|rem|vh|vw))/g, '<span class="num">$1</span>');
+}
+
+// Init
+renderCards();
+</script>
+</body>
+</html>
