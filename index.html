@@ -1,12 +1,118 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Templates Library</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .card p {
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 4px 8px;
+      background: #e6f0ff;
+      border-radius: 6px;
+      color: #3366ff;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
 </head>
+
 <body>
-  <a href="https://muhammad-touhid.github.io/templates/ovarlay">Background Overlay</a>
+
+  <div class="container">
+    <h1>🚀 Templates Library</h1>
+    <p>Browse and use ready-made templates</p>
+
+    <div class="grid">
+
+      <!-- Template Card -->
+      <a href="https://muhammad-touhid.github.io/templates/ovarlay" class="card">
+        <h3>Background Overlay</h3>
+        <p>overlay effect for backgrounds.</p>
+        <span class="tag">UI</span>
+      </a>
+
+      <a href="https://muhammad-touhid.github.io/templates/form" class="card">
+        <h3>Application Form</h3>
+        <p>Multi-step responsive form template.</p>
+        <span class="tag">Form</span>
+      </a>
+
+      <a href="https://muhammad-touhid.github.io/templates/landing-page" class="card">
+        <h3>Landing Page</h3>
+        <p>Modern landing page design for services.</p>
+        <span class="tag">Website</span>
+      </a>
+
+      <!-- Add more templates like this -->
+
+    </div>
+
+    <footer>
+      © 2026 Templates by Touhid
+    </footer>
+  </div>
+
 </body>
 </html>
